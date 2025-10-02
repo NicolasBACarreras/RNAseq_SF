@@ -1,7 +1,7 @@
 from sf import IO_type, rule
 
 @rule
-def quality_trimming_RNA(fastq_path, outdir, working_dir, cell, cond, rep, **kwargs):
+def quality_trimming_RNA(mkdir_out, fastq_path, outdir, working_dir, cell, cond, rep, **kwargs):
     """
     Quality control and trimming for RNA-seq.
 
@@ -10,7 +10,10 @@ def quality_trimming_RNA(fastq_path, outdir, working_dir, cell, cond, rep, **kwa
     cpus = kwargs.get('cpus', 10)  # default to 10 if not provided
 
     # Only real files in input/output
-    input_ = {}
+    input_ = {
+        "log_file": mkdir_out
+
+    }
 
     output = {
         "trimmed_fastq_1": f"{working_dir}/{cell}_{cond}/fastq/RNA/{cell}_{cond}_{rep}_1_trimmed.fq.gz",

@@ -9,8 +9,10 @@ sys.path.append('/home/user/Pipelines/SnapFlow')
 
 from sf import Process_dict, create_workdir, make_path_absolute
 
-from modules.mkdir    import mkdir_RNA  # import your rules
-from modules.quality_trimming    import quality_trimming_RNA  # import your rules
+from modules.mkdir  import mkdir_RNA,  quality_trimming_RNA
+
+# import your rules
+#from modules.quality_trimming    import quality_trimming_RNA  # import your rules
 
 
 def main(): 
@@ -41,12 +43,12 @@ def main():
     # -------------------
     # Step 1: Create directory structure
     # -------------------
-    mkdir_RNA(
-        working_dir=result_dir,
-        cell=params['cell'],
-        cond=params['condition'],
-        reps=len(params['reps']),
-        fasta_dir=params['fasta_path']
+    mkdir_out = mkdir_RNA(
+                    working_dir=result_dir,
+                    cell=params['cell'],
+                    cond=params['condition'],
+                    reps=len(params['reps']),
+                    fasta_dir=params['fasta_path']
     )
 
     # -------------------
@@ -57,6 +59,7 @@ def main():
         # Construct fastq files for this replicate
       
         quality_trimming_RNA(
+            mkdir_out,
             fastq_path=params['fasta_path'],
             outdir=os.path.join(result_dir, params['cell'] + "_" + params['condition'], 'results/RNA'),
             working_dir=result_dir,
