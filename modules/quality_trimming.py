@@ -18,6 +18,13 @@ def quality_trimming_RNA(fastq_path, outdir, working_dir, cell, cond, rep, **kwa
     }
 
     cmd = f"""
+
+    # Provide this with the singularity
+    module load hdf5
+    module load python/3.12.1
+    module load trimgalore/0.6.10
+
+
     set -e
     mkdir -p {working_dir}/{cell}_{cond}/fastq/RNA
     mkdir -p {outdir}/quality {outdir}/reports

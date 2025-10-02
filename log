@@ -1,0 +1,6 @@
+Things to do:
+
+
+	- Modify the dependencies so that process depend on the mkdir script (try adding some output from mkdir which goes into quality_trimming)
+
+	- Add process which takes trimmed reads and aligns them to reference genome
