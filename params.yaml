@@ -1,0 +1,24 @@
+sample1:
+  cell: "CellTypeA"            # Name of the cell type or tissue
+  condition: "Control"         # Experimental condition
+  reps: [1, 2, 3]              # List of replicate numbers
+  fasta_path: "/home/user/datasets/bulk_datasets/RNA/nB_130_RNA/"
+  genome: "/path/to/genome.fa" # Reference genome for alignment
+  ref_genome: "/path/to/genome.fa"  # Optional, if needed for indexing
+  trimming: "trimgalore"       # Trimming method, e.g., 'trimgalore', 'adapterremoval', 'noTrimming'
+  time_per_job: "2:00:00"
+  cpus_per_job: 10
+  output_dir: "/home/user/Pipelines/RNAseq_SF/results"  # could override command line outdir
+
+
+sample2:
+  cell: "CellTypeB"
+  condition: "Treatment"
+  reps: [1, 2]
+  genome: "/path/to/genomeB.fa"
+  trimming: "noTrimming"
+  time_per_job: "2:00:00"
+  cpus_per_job: 10
+  output_dir: "/home/user/Pipelines/RNAseq_SF/results"  # could override command line outdir
+
+
