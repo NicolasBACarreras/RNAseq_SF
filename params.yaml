@@ -1,10 +1,9 @@
 sample1:
-  cell: "CellTypeA"            # Name of the cell type or tissue
-  condition: "Control"         # Experimental condition
-  reps: [1, 2, 3]              # List of replicate numbers
+  cell: "nB"            # Name of the cell type or tissue
+  condition: "WT_1"         # Experimental condition
+  reps: [1]              # List of replicate numbers
   fasta_path: "/home/user/datasets/bulk_datasets/RNA/nB_130_RNA/"
-  genome: "/path/to/genome.fa" # Reference genome for alignment
-  ref_genome: "/path/to/genome.fa"  # Optional, if needed for indexing
+  genome: "/home/user/datasets/genomes/homo_sapiens/hg38.fa" # Reference genome for alignment
   trimming: "trimgalore"       # Trimming method, e.g., 'trimgalore', 'adapterremoval', 'noTrimming'
   time_per_job: "2:00:00"
   cpus_per_job: 10

@@ -5,10 +5,12 @@ import sys
 from argparse import ArgumentParser
 from yaml import Loader, load as load_yaml
 
+sys.path.append('/home/user/Pipelines/SnapFlow')
+
 from sf import Process_dict, create_workdir, make_path_absolute
 
 from modules.mkdir    import mkdir_RNA  # import your rules
-from modules.quality_trimming_RNA    import quality_trimming_RNA  # import your rules
+from modules.quality_trimming    import quality_trimming_RNA  # import your rules
 
 
 def main(): 
@@ -35,28 +37,35 @@ def main():
     # Initialize Process_dict for workflow management
     processes = Process_dict(params, name="RNAseq-HPC")
 
-    # Iterate over replicates
-    for replicate in params['reps']:
-        # 1 Create working directories
-        mkdir_output = mkdir_RNA(
-            working_dir=result_dir,
-            cell=params['cell'],
-            cond=params['condition'],
-            reps=replicate,
-            fasta_dir=params['fasta_path'],
-        )
-        processes.add(mkdir_output)
 
-        # 2 Quality trimming & fastqc
-        trimming_output = quality_trimming_RNA(
+    # -------------------
+    # Step 1: Create directory structure
+    # -------------------
+    mkdir_RNA(
+        working_dir=result_dir,
+        cell=params['cell'],
+        cond=params['condition'],
+        reps=len(params['reps']),
+        fasta_dir=params['fasta_path']
+    )
+
+    # -------------------
+    # Step 2: Quality control and trimming
+    # -------------------
+    # Assume single replicate example; loop over replicates if needed
+    for rep in params['reps']:
+        # Construct fastq files for this replicate
+      
+        quality_trimming_RNA(
+            fastq_path=params['fasta_path'],
+            outdir=os.path.join(result_dir, params['cell'] + "_" + params['condition'], 'results/RNA'),
             working_dir=result_dir,
             cell=params['cell'],
             cond=params['condition'],
-            rep=replicate,
-            genome=params['genome'],
-            prev_rule_output=mkdir_output[1]  # pass the output dict from mkdir_RNA
+            rep=rep,
+            cpus=10   # specify CPUs for trimming
         )
-        processes.add(trimming_output)
+
 
     ##################################################################################################
     # END WORKFLOW

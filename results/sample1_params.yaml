@@ -1,0 +1,11 @@
+cell: nB
+condition: WT_1
+cpus_per_job: 10
+fasta_path: /home/user/datasets/bulk_datasets/RNA/nB_130_RNA
+genome: /home/user/datasets/genomes/homo_sapiens/hg38.fa
+output_dir: /home/user/Pipelines/RNAseq_SF/results
+reps:
+- 1
+results directory: /home/user/Pipelines/RNAseq_SF/results
+time_per_job: '2:00:00'
+trimming: trimgalore
