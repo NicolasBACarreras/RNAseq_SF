@@ -5,7 +5,7 @@ import sys
 from argparse import ArgumentParser
 from yaml import Loader, load as load_yaml
 
-sys.path.append('/home/user/Pipelines/SnapFlow')
+sys.path.append('/home/bsc/bsc008978/Box/pipelines/SnapFlow')
 
 from sf import Process_dict, create_workdir, make_path_absolute
 
