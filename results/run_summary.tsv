@@ -1,3 +1,0 @@
-# Group	Rule	process	Status	time spent	inputs	outputs
-mkdir	mkdir_RNA	mkdir_RNA	Pending	N/A		log_file:/home/bsc/bsc008978/Box/pipelines/RNAseq_SF/results/nB_WT1/logs/0_mkdir_RNA.log
-mkdir	quality_trimming_RNA	quality_trimming_RNA	Pending	N/A	log_file:/home/bsc/bsc008978/Box/pipelines/RNAseq_SF/results/nB_WT1/logs/0_mkdir_RNA.log	trimmed_fastq_1:/home/bsc/bsc008978/Box/pipelines/RNAseq_SF/results/nB_WT1/fastq/RNA/nB_WT1_1_1_trimmed.fq.gz;trimmed_fastq_2:/home/bsc/bsc008978/Box/pipelines/RNAseq_SF/results/nB_WT1/fastq/RNA/nB_WT1_1_2_trimmed.fq.gz
