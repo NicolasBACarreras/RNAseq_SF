@@ -37,7 +37,7 @@ def main():
 
 
     # Initialize Process_dict for workflow management
-    processes = Process_dict(params, name="RNAseq-HPC")
+    processes = Process_dict(params, name="RNAseq Pipeline")
 
 
     # -------------------
@@ -72,7 +72,7 @@ def main():
 
     ##################################################################################################
     # END WORKFLOW
-    processes.write_commands(opts.sequential)
+    processes.write_commands(opts.sequential, dag_name="RNAseq Pipeline")
 
 
 def get_options():
