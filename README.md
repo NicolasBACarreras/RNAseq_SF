@@ -1,4 +1,6 @@
 # RNAseq_SF
 RNAseq pipeline using SnapFlow
 
-Explanation of files:
+Flow diagram of Pipeline:
+
+![RNAseq_SF](mermaid-graph.svg)
