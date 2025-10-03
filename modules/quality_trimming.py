@@ -11,7 +11,7 @@ def quality_trimming_RNA(mkdir_out, fastq_path, outdir, working_dir, cell, cond,
 
     # Only real files in input/output
     input_ = {
-        "log_file": mkdir_out
+        "log_file": IO_type('path' , 'log_file', mkdir_out),
 
     }
 

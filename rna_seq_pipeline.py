@@ -9,10 +9,10 @@ sys.path.append('/home/bsc/bsc008978/Box/pipelines/SnapFlow')
 
 from sf import Process_dict, create_workdir, make_path_absolute
 
-from modules.mkdir  import mkdir_RNA,  quality_trimming_RNA
+from modules.mkdir  import mkdir_RNA
 
 # import your rules
-#from modules.quality_trimming    import quality_trimming_RNA  # import your rules
+from modules.quality_trimming    import quality_trimming_RNA  # import your rules
 
 
 def main(): 
