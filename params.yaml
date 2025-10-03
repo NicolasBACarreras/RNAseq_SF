@@ -7,7 +7,7 @@ sample1:
   trimming: "trimgalore"       # Trimming method, e.g., 'trimgalore', 'adapterremoval', 'noTrimming'
   time_per_job: "2:00:00"
   cpus_per_job: 10
-  output_dir: "/home/bsc/bsc008978/Box/pipelines/RNAseq_SF/"  # could override command line outdir
+  output_dir: "/home/bsc/bsc008978/test_data/"  # could override command line outdir
 
 
 sample2:
