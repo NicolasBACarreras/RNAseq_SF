@@ -4,75 +4,91 @@ import os
 import sys
 from argparse import ArgumentParser
 from yaml import Loader, load as load_yaml
+sys.path.append('/home/bsc/bsc008978/Box/SnapFlow')
 
-sys.path.append('/home/bsc/bsc008978/Box/pipelines/SnapFlow')
+from sf import Process_dict, create_workdir, make_path_absolute, IO_type
 
-from sf import Process_dict, create_workdir, make_path_absolute
+# import rules
+from modules.mkdir import mkdir_RNA
+from modules.quality_trimming import quality_trimming_RNA
+from modules.alignment import alignment_RNA
 
-from modules.mkdir  import mkdir_RNA
-
-# import your rules
-from modules.quality_trimming    import quality_trimming_RNA  # import your rules
-
-
-def main(): 
+def main():
     opts = get_options()
-    
     yaml_params = opts.yaml_params
     sample = opts.sample
     result_dir = opts.outdir
 
-    # Load YAML metadata
     params = load_yaml(open(yaml_params, 'r', encoding='utf-8'), Loader=Loader)
     try:
-        params = params[sample]
+        sample_params = params[sample]
     except KeyError:
         raise KeyError(f'ERROR: sample name should be one of: [{", ".join(list(params.keys()))}]')
 
-    make_path_absolute(params)
-    create_workdir(result_dir, sample, None, None, params)
+    sample_params['results directory'] = result_dir
+    make_path_absolute(sample_params)
+    create_workdir(result_dir, sample, None, None, sample_params)
 
-    ##################################################################################################
-    # START WORKFLOW
+    processes = Process_dict(sample_params, name="RNAseq Pipeline")
 
-
-    # Initialize Process_dict for workflow management
-    processes = Process_dict(params, name="RNAseq Pipeline")
-
-
-    # -------------------
-    # Step 1: Create directory structure
-    # -------------------
-    mkdir_out = mkdir_RNA(
-                    working_dir=result_dir,
-                    cell=params['cell'],
-                    cond=params['condition'],
-                    reps=len(params['reps']),
-                    fasta_dir=params['fasta_path']
+    mkdir_process = mkdir_RNA(
+        working_dir=result_dir,
+        cell=sample_params['cell'],
+        cond=sample_params['condition'],
+        reps=len(sample_params['reps']),
+        fasta_dir=sample_params['fasta_path']
     )
 
-    # -------------------
-    # Step 2: Quality control and trimming
-    # -------------------
-    # Assume single replicate example; loop over replicates if needed
-    for rep in params['reps']:
-        # Construct fastq files for this replicate
-      
-        quality_trimming_RNA(
-            mkdir_out,
-            fastq_path=params['fasta_path'],
-            outdir=os.path.join(result_dir, params['cell'] + "_" + params['condition'], 'results/RNA'),
+    for rep in sample_params['reps']:
+        dependency_for_alignment = None
+        fastq1_for_alignment = None
+        fastq2_for_alignment = None
+
+        sample_dir = f"{result_dir}/{sample_params['cell']}_{sample_params['condition']}"
+        
+        if sample_params.get('trimming', 'noTrimming').lower() == 'trimgalore':
+            moved_fastq_dir = f"{sample_dir}/fastq/RNA"
+            
+            trim_process = quality_trimming_RNA(
+                mkdir_process,
+                fastq_dir=moved_fastq_dir,
+                outdir=os.path.join(sample_dir, 'results/RNA'),
+                working_dir=result_dir,
+                cell=sample_params['cell'],
+                cond=sample_params['condition'],
+                rep=rep,
+                cpus=10,
+                replicate_name=f"trim_{rep}"
+            )
+            dependency_for_alignment = trim_process
+            # Get the future paths of the trimmed files from the process output dictionary
+            fastq1_for_alignment = trim_process.output['trimmed_fastq_1']
+            fastq2_for_alignment = trim_process.output['trimmed_fastq_2']
+        else:
+            # If no trimming, alignment depends directly on mkdir
+            dependency_for_alignment = mkdir_process
+            # --- FIX: Construct the correct paths to the MOVED, UNTRIMMED files ---
+  
+            fastq1_for_alignment = f"{sample_dir}/fastq/RNA/{sample_params['cell']}_{sample_params['condition']}_{rep}_R1.fastq.gz"
+            fastq2_for_alignment = f"{sample_dir}/fastq/RNA/{sample_params['cell']}_{sample_params['condition']}_{rep}_R2.fastq.gz"
+
+        # Step 3: Alignment
+        alignment_RNA(
+            dependency_for_alignment,
+            # --- FIX: Pass the required fastq1 and fastq2 arguments ---
+            fastq1=fastq1_for_alignment,
+            fastq2=fastq2_for_alignment,
             working_dir=result_dir,
-            cell=params['cell'],
-            cond=params['condition'],
+            cell=sample_params['cell'],
+            cond=sample_params['condition'],
             rep=rep,
-            cpus=10   # specify CPUs for trimming
+            star_index_dir=sample_params['STAR_index_dir'],
+            star_options=sample_params['STAR_options'],
+            cpus=15,
+            replicate_name=f"align_{rep}"
         )
 
-
-    ##################################################################################################
-    # END WORKFLOW
-    processes.write_commands(opts.sequential, dag_name="RNAseq Pipeline")
+    processes.write_commands(opts.sequential, dag_name=f"RNAseq Pipeline for {sample}")
 
 
 def get_options():
@@ -83,7 +99,6 @@ def get_options():
     parser.add_argument('--sequential', action='store_true', help="Write commands sequentially")
     opts = parser.parse_args()
     return opts
-
 
 if __name__ == "__main__":
     sys.exit(main())

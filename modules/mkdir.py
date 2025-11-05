@@ -1,3 +1,5 @@
+import sys
+sys.path.append('/home/bsc/bsc008978/Box/SnapFlow')
 from sf import IO_type, rule
 
 @rule
@@ -16,28 +18,44 @@ def mkdir_RNA(working_dir, cell, cond, reps, fasta_dir, **kwargs):
 
     cmd = f"""
     set -e
-    cd {working_dir}
 
-    if [ ! -d "{cell}_{cond}" ]; then
-        mkdir -p {cell}_{cond}
-    fi
-    cd {cell}_{cond}
+    # Define the main sample directory using an absolute path
+    SAMPLE_DIR="{working_dir}/{cell}_{cond}"
 
-    mkdir -p results fastq logs jobs
-    mkdir -p fastq/RNA results/RNA jobs/RNA logs/RNA
+    # Create the directory structure using absolute paths
+    mkdir -p $SAMPLE_DIR/results/RNA
+    mkdir -p $SAMPLE_DIR/fastq/RNA
+    mkdir -p $SAMPLE_DIR/logs/RNA
+    mkdir -p $SAMPLE_DIR/jobs/RNA
 
-    echo "Working Directory: {working_dir}"  >> logs/0_mkdir_RNA.log
-    echo "Cell Type or Tissue: {cell}"       >> logs/0_mkdir_RNA.log
-    echo "Condition: {cond}"                 >> logs/0_mkdir_RNA.log
-    echo "Replicates: {reps}"                >> logs/0_mkdir_RNA.log
+    echo "Working Directory: {working_dir}"  >> $SAMPLE_DIR/logs/0_mkdir_RNA.log
+    echo "Cell Type or Tissue: {cell}"       >> $SAMPLE_DIR/logs/0_mkdir_RNA.log
+    echo "Condition: {cond}"                 >> $SAMPLE_DIR/logs/0_mkdir_RNA.log
+    echo "Replicates: {reps}"                >> $SAMPLE_DIR/logs/0_mkdir_RNA.log
 
-    cd results/RNA
-    mkdir -p quality alignment fcount salmon reports coverage
+    # Create subdirectories within the results folder
+    mkdir -p $SAMPLE_DIR/results/RNA/quality
+    mkdir -p $SAMPLE_DIR/results/RNA/alignment
+    mkdir -p $SAMPLE_DIR/results/RNA/fcount
+    mkdir -p $SAMPLE_DIR/results/RNA/salmon
+    mkdir -p $SAMPLE_DIR/results/RNA/reports
+    mkdir -p $SAMPLE_DIR/results/RNA/coverage
 
+    # Loop to create salmon subdirs and move files
     for i in $(seq 1 {reps}); do
-        mkdir -p salmon/{cell}_{cond}_${{i}}
-        echo mv $(find {fasta_dir} -maxdepth 1 -name "{cell}_{cond}_${{i}}_*") ../fastq/RNA >> ../../logs/0_mkdir_RNA.log
-        mv $(find {fasta_dir} -maxdepth 1 -name "{cell}_{cond}_${{i}}_*") ../fastq/RNA/
+        mkdir -p $SAMPLE_DIR/results/RNA/salmon/{cell}_{cond}_${{i}}
+    
+        # Use an array to safely capture file paths found
+        files_to_move=($(find {fasta_dir} -maxdepth 1 -name "{cell}_{cond}_${{i}}_*"))
+
+        # Check if the array is not empty
+        if [ ${{#files_to_move[@]}} -gt 0 ]; then
+            echo "Found files to move for rep ${{i}}: ${{files_to_move[@]}}" >> $SAMPLE_DIR/logs/0_mkdir_RNA.log
+            # Move the found files to the absolute path
+            mv "${{files_to_move[@]}}" $SAMPLE_DIR/fastq/RNA/
+        else
+            echo "WARNING: No FASTQ files found in {fasta_dir} for pattern {cell}_{cond}_${{i}}_* for rep ${{i}}" >> $SAMPLE_DIR/logs/0_mkdir_RNA.log
+        fi
     done
-    """
+"""
 

@@ -1,13 +1,11 @@
 sample1:
-  cell: "nB"            # Name of the cell type or tissue
-  condition: "WT1"         # Experimental condition
-  reps: [1]              # List of replicate numbers
+  cell: "nB"            
+  condition: "WT1"         
+  reps: [1]              
   fasta_path: "/home/bsc/bsc008978/test_data/"
-  genome: "/gpfs/scratch/bsc08/bsc008978/db/Genomes/Homo_sapiens-GRCh38.p13/Homo_sapiens-GRCh38.p13.fa" # Reference genome for alignment
-  trimming: "trimgalore"       # Trimming method, e.g., 'trimgalore', 'adapterremoval', 'noTrimming'
-  time_per_job: "2:00:00"
-  cpus_per_job: 10
-  output_dir: "/home/bsc/bsc008978/test_data/"  # could override command line outdir
+  STAR_index_dir: "/gpfs/projects/bsc08/shared_projects/IJC_3Dchromatin/genomes/human/GRCh38/current/indices/STAR/" 
+  STAR_options: "--outSAMtype BAM Unsorted --outSAMattributes Standard"
+  trimming: "trimgalore"
 
 
 sample2:
@@ -16,8 +14,6 @@ sample2:
   reps: [1, 2]
   genome: "/path/to/genomeB.fa"
   trimming: "noTrimming"
-  time_per_job: "2:00:00"
-  cpus_per_job: 10
   output_dir: "/home/user/Pipelines/RNAseq_SF/results"  # could override command line outdir
 
 
