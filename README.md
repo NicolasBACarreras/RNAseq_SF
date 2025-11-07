@@ -3,4 +3,4 @@ RNAseq pipeline using SnapFlow
 
 Flow diagram of Pipeline:
 
-![RNAseq_SF](mermaid-graph.svg)
+![RNAseq_SF](flow_diagram_rna.png)
