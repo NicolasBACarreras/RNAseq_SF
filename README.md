@@ -1,5 +1,5 @@
 # RNAseq_SF 🧬
-RNAseq pipeline using SnapFlow (https://github.com/fransua/SnapFlow)
+RNAseq pipeline using SnapFlow (https://github.com/fransua/SnapFlow), a workflow manager based purely on Python.
 
 Flow diagram of Pipeline:
 
