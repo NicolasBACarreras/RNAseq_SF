@@ -1,4 +1,4 @@
-# RNAseq_SF
+# RNAseq_SF 🧬
 RNAseq pipeline using SnapFlow (https://github.com/fransua/SnapFlow)
 
 Flow diagram of Pipeline:
