@@ -42,7 +42,7 @@ def alignment_RNA(dependency_process, fastq1, fastq2, working_dir, cell, cond, r
          --readFilesIn {fastq_files} \\
          --readFilesCommand zcat \\
          --outFileNamePrefix {path_prefix} \\
-         {star_options}
+         --outSAMtype BAM Unsorted --outSAMattributes Standard
 
     sambamba sort -t {cpus} -o {path_prefix}.sort.bam {path_prefix}Aligned.out.bam
     rm {path_prefix}Aligned.out.bam

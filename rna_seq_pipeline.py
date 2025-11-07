@@ -99,7 +99,6 @@ def main():
             cond=sample_params['condition'],
             rep=rep,
             star_index_dir=sample_params['STAR_index_dir'],
-            star_options=sample_params['STAR_options'],
             cpus=15,
             replicate_name=f"align_rep{rep}"
         )
