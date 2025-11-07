@@ -17,4 +17,4 @@ Use slurm_do.py (https://github.com/fransua/slurm_utils/blob/master/scripts/subm
 slurm_do.py -i command.q
 ```
 
-Note: the fastq files must be named with the following convention -> ("celltype")__("condition")__("rep")__R(1/2).fastq.gz
+Note: the fastq files must be named with the following convention -> $celltype_$condition__$rep_R(1/2).fastq.gz
