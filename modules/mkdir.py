@@ -13,7 +13,7 @@ def mkdir_RNA(working_dir, cell, cond, reps, fasta_dir, **kwargs):
     input_ = {}
     output = {
 
-        "log_file": f"{working_dir}/{cell}_{cond}/logs/0_mkdir_RNA.log", 
+        "log_file": f"{working_dir}/{cell}_{cond}/logs/RNA/0_mkdir_RNA.log", 
     }
 
     cmd = f"""
@@ -37,13 +37,11 @@ def mkdir_RNA(working_dir, cell, cond, reps, fasta_dir, **kwargs):
     mkdir -p $SAMPLE_DIR/results/RNA/quality
     mkdir -p $SAMPLE_DIR/results/RNA/alignment
     mkdir -p $SAMPLE_DIR/results/RNA/fcount
-    mkdir -p $SAMPLE_DIR/results/RNA/salmon
     mkdir -p $SAMPLE_DIR/results/RNA/reports
     mkdir -p $SAMPLE_DIR/results/RNA/coverage
 
     # Loop to create salmon subdirs and move files
     for i in $(seq 1 {reps}); do
-        mkdir -p $SAMPLE_DIR/results/RNA/salmon/{cell}_{cond}_${{i}}
     
         # Use an array to safely capture file paths found
         files_to_move=($(find {fasta_dir} -maxdepth 1 -name "{cell}_{cond}_${{i}}_*"))

@@ -4,16 +4,22 @@ import os
 import sys
 from argparse import ArgumentParser
 from yaml import Loader, load as load_yaml
-sys.path.append('/home/bsc/bsc008978/Box/SnapFlow')
 
 from sf import Process_dict, create_workdir, make_path_absolute, IO_type
 
-# import rules
+# Import modules
 from modules.mkdir import mkdir_RNA
 from modules.quality_trimming import quality_trimming_RNA
 from modules.alignment import alignment_RNA
+from modules.feature_counts import feature_counts_RNA
+from modules.bam_coverage import bam_coverage_RNA
 
 def main():
+
+    #######################################
+    # SETUP
+    #######################################
+
     opts = get_options()
     yaml_params = opts.yaml_params
     sample = opts.sample
@@ -31,6 +37,10 @@ def main():
 
     processes = Process_dict(sample_params, name="RNAseq Pipeline")
 
+    #######################################
+    # CREATE DIRECTORY STRUCTURE
+    #######################################
+
     mkdir_process = mkdir_RNA(
         working_dir=result_dir,
         cell=sample_params['cell'],
@@ -39,16 +49,24 @@ def main():
         fasta_dir=sample_params['fasta_path']
     )
 
+    #######################################
+    # RUN PIPELINE PER REPLICATE
+    #######################################
+
     for rep in sample_params['reps']:
+
         dependency_for_alignment = None
         fastq1_for_alignment = None
         fastq2_for_alignment = None
 
         sample_dir = f"{result_dir}/{sample_params['cell']}_{sample_params['condition']}"
-        
+
+        #######################################
+        # TRIMMING
+        #######################################
         if sample_params.get('trimming', 'noTrimming').lower() == 'trimgalore':
+
             moved_fastq_dir = f"{sample_dir}/fastq/RNA"
-            
             trim_process = quality_trimming_RNA(
                 mkdir_process,
                 fastq_dir=moved_fastq_dir,
@@ -58,24 +76,22 @@ def main():
                 cond=sample_params['condition'],
                 rep=rep,
                 cpus=10,
-                replicate_name=f"trim_{rep}"
+                replicate_name=f"trim_rep{rep}"
             )
             dependency_for_alignment = trim_process
-            # Get the future paths of the trimmed files from the process output dictionary
             fastq1_for_alignment = trim_process.output['trimmed_fastq_1']
             fastq2_for_alignment = trim_process.output['trimmed_fastq_2']
         else:
-            # If no trimming, alignment depends directly on mkdir
             dependency_for_alignment = mkdir_process
-            # --- FIX: Construct the correct paths to the MOVED, UNTRIMMED files ---
-  
             fastq1_for_alignment = f"{sample_dir}/fastq/RNA/{sample_params['cell']}_{sample_params['condition']}_{rep}_R1.fastq.gz"
             fastq2_for_alignment = f"{sample_dir}/fastq/RNA/{sample_params['cell']}_{sample_params['condition']}_{rep}_R2.fastq.gz"
 
-        # Step 3: Alignment
-        alignment_RNA(
+        #######################################
+        # ALIGNMENT
+        #######################################
+
+        alignment_process = alignment_RNA(
             dependency_for_alignment,
-            # --- FIX: Pass the required fastq1 and fastq2 arguments ---
             fastq1=fastq1_for_alignment,
             fastq2=fastq2_for_alignment,
             working_dir=result_dir,
@@ -85,7 +101,37 @@ def main():
             star_index_dir=sample_params['STAR_index_dir'],
             star_options=sample_params['STAR_options'],
             cpus=15,
-            replicate_name=f"align_{rep}"
+            replicate_name=f"align_rep{rep}"
+        )
+
+
+        #######################################
+        # QUANTIFICATION
+        #######################################
+
+        feature_counts_RNA(
+            alignment_process, # <-- Dependency
+            working_dir=result_dir,
+            cell=sample_params['cell'],
+            cond=sample_params['condition'],
+            rep=rep,
+            gtf_annotation=sample_params['gtf_annotation'],
+            cpus=8,
+            replicate_name=f"counts_rep{rep}"
+        )
+
+        #######################################
+        # Coverage
+        #######################################
+
+        bam_coverage_RNA(
+            alignment_process, # <-- Dependency
+            working_dir=result_dir,
+            cell=sample_params['cell'],
+            cond=sample_params['condition'],
+            rep=rep,
+            cpus=8,
+            replicate_name=f"bigwig_rep{rep}"
         )
 
     processes.write_commands(opts.sequential, dag_name=f"RNAseq Pipeline for {sample}")

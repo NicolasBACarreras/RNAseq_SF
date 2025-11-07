@@ -7,10 +7,10 @@ def quality_trimming_RNA(mkdir_out, fastq_dir, outdir, working_dir, cell, cond, 
     """
     Quality control and trimming for RNA-seq.
     """
-    # This line is good, it gets the value from the pipeline script
+
     cpus_requested = kwargs.get('cpus', 10)
 
-    logs_dir = f"{working_dir}/{cell}_{cond}/logs"
+    logs_dir = f"{working_dir}/{cell}_{cond}/logs/RNA"
     log_file = f"{logs_dir}/1_trimming_RNA_{rep}.log"
 
     input_ = { "mkdir_log": IO_type('path' , 'log_file', mkdir_out) }
@@ -20,10 +20,6 @@ def quality_trimming_RNA(mkdir_out, fastq_dir, outdir, working_dir, cell, cond, 
         "trimmed_fastq_2": f"{working_dir}/{cell}_{cond}/fastq/RNA/{cell}_{cond}_{rep}_val_2.fq.gz",
         "log_file": log_file
     }
-
-    # --- THIS IS THE FIX ---
-    # We explicitly define the 'cpus' variable right before the f-string uses it.
-    cpus = cpus_requested
 
     cmd = f"""
     module load hdf5
@@ -51,7 +47,7 @@ def quality_trimming_RNA(mkdir_out, fastq_dir, outdir, working_dir, cell, cond, 
     fastqc $FASTQ_1 $FASTQ_2 -o {outdir}/quality
 
     trim_galore --paired $FASTQ_1 $FASTQ_2 \\
-        --cores {cpus} \\
+        --cores {cpus_requested} \\
         --output_dir {working_dir}/{cell}_{cond}/fastq/RNA \\
         --basename {cell}_{cond}_{rep} 2>> {log_file}
 

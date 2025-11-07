@@ -6,6 +6,7 @@ sample1:
   STAR_index_dir: "/gpfs/projects/bsc08/shared_projects/IJC_3Dchromatin/genomes/human/GRCh38/current/indices/STAR/" 
   STAR_options: "--outSAMtype BAM Unsorted --outSAMattributes Standard"
   trimming: "trimgalore"
+  gtf_annotation: "/gpfs/projects/bsc08/shared_projects/IJC_3Dchromatin/genomes/human/GRCh38/current/Homo_sapiens.GRCh38.104.gtf"
 
 
 sample2:
