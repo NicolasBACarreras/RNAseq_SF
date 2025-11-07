@@ -3,19 +3,9 @@ sample1:
   condition: "WT1"         
   reps: [1]              
   fasta_path: "/home/bsc/bsc008978/test_data/"
-  STAR_index_dir: "/gpfs/projects/bsc08/shared_projects/IJC_3Dchromatin/genomes/human/GRCh38/current/indices/STAR/" 
-  STAR_options: "--outSAMtype BAM Unsorted --outSAMattributes Standard"
   trimming: "trimgalore"
+  STAR_index_dir: "/gpfs/projects/bsc08/shared_projects/IJC_3Dchromatin/genomes/human/GRCh38/current/indices/STAR/" 
   gtf_annotation: "/gpfs/projects/bsc08/shared_projects/IJC_3Dchromatin/genomes/human/GRCh38/current/Homo_sapiens.GRCh38.104.gtf"
-
-
-sample2:
-  cell: "CellTypeB"
-  condition: "Treatment"
-  reps: [1, 2]
-  genome: "/path/to/genomeB.fa"
-  trimming: "noTrimming"
-  output_dir: "/home/user/Pipelines/RNAseq_SF/results"  # could override command line outdir
 
 
 
